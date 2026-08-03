@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ContractLens</title>
+  <link rel="stylesheet" href="sidepanel.css" />
+</head>
+<body>
+  <header class="cl-header">
+    <div class="cl-mark" aria-hidden="true"></div>
+    <span class="cl-wordmark">ContractLens</span>
+  </header>
+
+  <main id="cl-root">
+    <!-- Empty state -->
+    <section id="cl-empty" class="cl-state">
+      <p class="cl-empty-title">No contract open yet</p>
+      <p class="cl-empty-body">
+        Open a contract attachment in Gmail and click
+        <strong>“Analyze with ContractLens”</strong> to see it here.
+      </p>
+    </section>
+
+    <!-- Loading state -->
+    <section id="cl-loading" class="cl-state" hidden>
+      <div class="cl-spinner" aria-hidden="true"></div>
+      <p id="cl-loading-file" class="cl-loading-text">Analyzing contract…</p>
+    </section>
+
+    <!-- Result state -->
+    <section id="cl-result" hidden>
+      <div class="cl-summary">
+        <div>
+          <p class="cl-label">Contract</p>
+          <p id="cl-filename" class="cl-filename">—</p>
+        </div>
+        <div id="cl-overall-badge" class="cl-badge">—</div>
+      </div>
+
+      <div id="cl-clauses" class="cl-clauses"></div>
+    </section>
+  </main>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
