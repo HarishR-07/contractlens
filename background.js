@@ -15,6 +15,17 @@ const API_BASE = "https://api.contractlens.ai"; // TODO: point at your real back
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "CONTRACT_DETECTED") {
+    // IMPORTANT: sidePanel.open() must be called synchronously, in the
+    // same tick as the message arrives, or Chrome no longer treats it as
+    // tied to the user's click and silently refuses to open it. Do this
+    // BEFORE any await — that's why it's the very first line here rather
+    // than inside the async handler below.
+    if (sender.tab) {
+      chrome.sidePanel.open({ tabId: sender.tab.id }).catch((err) => {
+        console.error("sidePanel.open failed:", err);
+      });
+    }
+
     handleContractDetected(message.payload, sender.tab)
       .then(sendResponse)
       .catch((err) => sendResponse({ error: String(err) }));
@@ -25,12 +36,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 async function handleContractDetected(payload, tab) {
   // payload: { fileName, fileUrl, mimeType }
   // Stash a "pending" state immediately so the side panel can show a
-  // loading state the instant the user opens it.
+  // loading state the instant the user opens it. (Panel is already
+  // opening in parallel above — this just fills it in.)
   await chrome.storage.local.set({
     activeContract: { status: "analyzing", fileName: payload.fileName },
   });
-
-  if (tab) chrome.sidePanel.open({ tabId: tab.id });
 
   const analysis = await analyzeContract(payload);
 
